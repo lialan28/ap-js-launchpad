@@ -45,6 +45,7 @@
 
     <script>
         // Cargar sonidos desde JSON
+
         let sounds = [];
         fetch('sounds.json')
             .then(response => response.json())
@@ -52,6 +53,12 @@
                 sounds = data;
                 createButtons();
             });
+
+        //Inicializar fart.js
+        const fart = new Fart({
+            volume: 0.5,
+            loop: false
+        });
 
         // Crear botones
         function createButtons() {

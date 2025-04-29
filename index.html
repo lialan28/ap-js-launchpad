@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Launchpad Soundboard</title>
+    <style>
+        .launchpad {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+        }
+
+        .button {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 5px;
+            background: #444;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            background: #666;
+            transform: scale(1.05);
+        }
+
+        #yt-player {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="launchpad" id="launchpad"></div>
+    <div id="yt-player"></div>
+
+    <!-- Fart.js library -->
+    <script src="https://example.com/fart.js"></script>
+    
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // Cargar sonidos desde JSON
+        let sounds = [];
+        fetch('sounds.json')
+            .then(response => response.json())
+            .then(data => {
+                sounds = data;
+                createButtons();
+            });
+
+        // Crear botones
+        function createButtons() {
+            const launchpad = document.getElementById('launchpad');
+            
+            for (let i = 0; i < 30; i++) {
+                const button = document.createElement('button');
+                button.className = 'button';
+                button.textContent = i + 1;
+                
+                if (i === 0) {
+                    // Primer botón con fart.js
+                    button.addEventListener('click', () => {
+                        fart.play();
+                    });
+                } else {
+                    // Resto de botones con YouTube
+                    const soundIndex = i - 1;
+                    if (sounds[soundIndex]) {
+                        button.addEventListener('click', () => {
+                            playYouTube(sounds[soundIndex].url);
+                        });
+                    }
+                }
+                
+                launchpad.appendChild(button);
+            }
+        }
+
+        // Reproductor YouTube
+        let ytPlayer;
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('yt-player', {
+                height: '0',
+                width: '0',
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Reproductor listo
+        }
+
+        function playYouTube(url) {
+            const videoId = extractYouTubeId(url);
+            if (videoId && ytPlayer) {
+                ytPlayer.loadVideoById(videoId);
+                ytPlayer.playVideo();
+            }
+        }
+
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+    </script>
+</body>
+</html>
